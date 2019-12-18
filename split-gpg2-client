@@ -1,15 +1,18 @@
 #!/bin/bash
 
-agent_socket=`gpgconf --list-dirs | grep '^agent-socket:' | cut -d ':' -f 2`
-
-if [ -S "$agent_socket" ]; then
-    agent_pid=`lsof -F p "$agent_socket" | cut -b 2-`
-
-    if [ -n $agent_pid ]; then
-        kill $agent_pid
+for d in /etc "${XDG_CONFIG_HOME:-$HOME/.config}"; do
+    rc_file="$d/split-gpg2-rc"
+    if [ -r "$rc_file" ]; then
+        . "$rc_file"
     fi
+done
 
-    rm -f "$agent_socket"
+if [ -z "$SPLIT_GPG2_SERVER_DOMAIN" ]; then
+    SPLIT_GPG2_SERVER_DOMAIN="@default"
 fi
 
-socat "UNIX-LISTEN:$agent_socket,fork" EXEC:/usr/share/split-gpg2/split-gpg2-client-wrapper
+agent_socket=`gpgconf --list-dirs | grep '^agent-socket:' | cut -d ':' -f 2`
+
+gpgconf --kill gpg-agent &>/dev/null
+
+socat "unix-listen:$agent_socket,fork,unlink-early" "exec:qrexec-client-vm $SPLIT_GPG2_SERVER_DOMAIN qubes.Gpg2"

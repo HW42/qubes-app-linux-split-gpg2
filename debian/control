@@ -3,11 +3,18 @@ Maintainer: HW42 <hw42@ipsumj.de>
 Section: misc
 Priority: optional
 Standards-Version: 3.9.6
-Build-Depends: debhelper (>= 9)
+Build-Depends:
+ debhelper (>= 9),
+ python3-all,
+ python3-setuptools,
+ dh-python,
+# for tests
+ gnupg (>= 2.1.0~beta),
+ socat,
 
 Package: split-gpg2
 Architecture: all
-Depends: ${misc:Depends}, socat, ruby (>= 1.9), bash, gnupg2 (>= 2.1.0~beta), zenity, libnotify-bin
+Depends: ${misc:Depends}, ${python3:Depends}, socat, bash, gnupg (>= 2.1.0~beta), zenity, libnotify-bin
 Description: split-gpg2 for Qubes
-  split-gpg2 allows you to run the gpg2 client in a different Qubes-Domain than
+  split-gpg2 allows you to run the gpg client in a different Qubes-Domain than
   the gpg-agent.
