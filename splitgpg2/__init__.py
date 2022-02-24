@@ -846,14 +846,49 @@ class GpgServer:
         return self.inquire_command_D(validate_ciphertext_sexp, untrusted_args=untrusted_args)
 
     def inquire_command_D_KEYGEN(self, *, untrusted_args: bytes):
+        def validate_bits_len(untrusted_sexp):
+            untrusted_bits = self.check_letter_sexp(b'nbits', untrusted_sexp, bytes)
+            if len(untrusted_bits) != 4 or untrusted_bits < b'1024' or untrusted_bits > b'4096':
+                raise ValueError('bad length')
+            for untrusted_v in untrusted_bits:
+                if untrusted_v < 48 or untrusted_v > 57:
+                    raise ValueError('bad length')
         def validate_keygen_sexp(*, untrusted_sexp):
             """
-            Check that the ``untrusted_sexp`` is a valid offer of a ciphertext
-            for key generation.
-
-            FIXME: this is not a sufficient check.
+            Check that the ``untrusted_sexp`` is a valid set of key generation
+            parameters.
             """
-            self.check_letter_sexp(b'genkey', untrusted_sexp, list)
+            untrusted_sexp = self.check_letter_sexp(b'genkey', untrusted_sexp, list)
+            if len(untrusted_sexp) < 2:
+                raise ValueError('No key parameters')
+            untrusted_alg = untrusted_sexp[0]
+            if untrusted_alg == b'ecc':
+                if len(untrusted_sexp) != 3:
+                    raise ValueError('invalid elliptic curve parameters')
+                untrusted_curve = self.check_letter_sexp(b'curve', untrusted_sexp[1], bytes)
+                untrusted_flags = untrusted_sexp[2]
+                if untrusted_curve == b'Ed25519':
+                    if untrusted_flags != [b'flags', b'eddsa', b'comp']:
+                        raise ValueError('invalid Ed25519 parameters')
+                elif untrusted_curve in (b'Ed448', b'X448'):
+                    if untrusted_flags != [b'flags', b'comp']:
+                        raise ValueError('invalid {} parameters'.format(untrusted_curve.decode('ascii', 'strict')))
+                elif untrusted_curve == b'Curve25519':
+                    if untrusted_flags != [b'flags', b'djb-tweak', b'comp']:
+                        raise ValueError('invalid Curve25519 parameters')
+                elif untrusted_curve in (b'NIST P-256', b'NIST P-384', b'NIST P-521', b'secp256k1'):
+                    if untrusted_flags != [b'flags', b'nocomp']:
+                        raise ValueError('invalid {} curve parameters'.format(untrusted_curve.decode('ascii', 'strict')))
+                else:
+                    raise ValueError('Unknown elliptic curve')
+            elif untrusted_alg in (b'rsa', b'openpgp-elg'):
+                if len(untrusted_sexp) != 2:
+                    raise ValueError('invalid ElGamel or RSA parameters')
+                validate_bits_len(untrusted_sexp[1])
+            elif untrusted_alg == b'dsa':
+                if len(untrusted_sexp) != 3 or untrusted_sexp[2] != [b'qbits', b'256']:
+                    raise ValueError('invalid DSA parameters')
+                validate_bits_len(untrusted_sexp[1])
 
         return self.inquire_command_D(validate_keygen_sexp, untrusted_args=untrusted_args)
 
