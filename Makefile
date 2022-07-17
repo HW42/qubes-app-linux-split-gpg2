@@ -35,3 +35,4 @@ install-other:
 	install -m 644 README.md $(DESTDIR)/usr/share/doc/split-gpg2/
 	install -m 644 tests/* $(DESTDIR)/usr/share/split-gpg2-tests/
 	install -m 755 splitgpg2-migrate-subkeys $(DESTDIR)/usr/bin
+	install -m 755 qubes.Gpg2ExportPublicKeys $(DESTDIR)/etc/qubes-rpc

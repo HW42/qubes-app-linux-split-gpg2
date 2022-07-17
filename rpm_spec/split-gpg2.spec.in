@@ -57,6 +57,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 /etc/qubes-rpc/qubes.Gpg2
+/etc/qubes-rpc/qubes.Gpg2ExportPublicKeys
 /etc/gnupg/gpg.conf
 %_bindir/splitgpg2-migrate-subkeys
 %_userunitdir/split-gpg2-client.service

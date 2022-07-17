@@ -108,6 +108,8 @@ To prevent this from happening, split-gpg2 must not have access to the primary k
 
 You **must** have a signing-capable subkey configured for this to work.  split-gpg2 will not generate one automatically, as it does not know if you are using a smart card or what parameters should be used to generate the key.  Also, if you generate a new key in your normal home directory, it will not automatically be made available in split-gpg2.  Future releases may lift both of these limitations.  In the meantime, you can run `splitgpg2-migrate-subkeys` to make all of your secret subkeys available to split-gpg2, even if the split-gpg2 home directory already exists.
 
+split-gpg2 provides the `qubes.Gpg2ExportPublicKeys` service to export public keys from the backend VM.
+
 ## Advanced usage
 
 There are a few option not described in this README.

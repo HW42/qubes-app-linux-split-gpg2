@@ -2,5 +2,5 @@
 #
 #gpg-client-vm gpg-server-vm allow
 #
-# to allow the VM named 'gpg-client-vm' use (but not export) the private keys
-# in 'gpg-server-vm'.
+# to allow the VM named 'gpg-client-vm' to use (but not export) the private
+# subkeys in 'gpg-server-vm'.

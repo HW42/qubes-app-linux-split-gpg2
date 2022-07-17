@@ -1,0 +1,6 @@
+# Add a line like
+#
+#gpg-client-vm gpg-server-vm allow
+#
+# to allow the VM named 'gpg-client-vm' to export the public (not private!) keys
+# in 'gpg-server-vm'.

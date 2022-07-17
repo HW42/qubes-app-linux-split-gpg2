@@ -1,0 +1,14 @@
+#!/bin/sh --
+set -eu
+exec < /dev/null
+do_export () {
+    exec gpg2 --export --armor --batch --no-tty --disable-dirmngr "$@"
+}
+
+if [ "x${1-}" = xbackup ]; then
+    do_export --export-options=backup
+elif [ -z "${1-}" ]; then
+    do_export
+else
+     printf 'Unknown backup option "%s" (expected "backup" or empty string)\n' "$1"
+fi
