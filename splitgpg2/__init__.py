@@ -236,7 +236,7 @@ class GpgServer:
         except subprocess.CalledProcessError as e:
             raise StartFailed from e
 
-        dirs = subprocess.check_output(['gpgconf', '--list-dirs'])
+        dirs = subprocess.check_output(['gpgconf', '--list-dirs', '-o/dev/stdout'])
         if self.allow_keygen:
             socket_field = b'agent-socket:'
         else:

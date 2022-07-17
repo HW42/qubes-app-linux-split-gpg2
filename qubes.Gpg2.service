@@ -1,10 +1,24 @@
-#!/bin/bash
+#!/bin/bash --
+set -euo pipefail
 
-for d in /etc "${XDG_CONFIG_HOME:-$HOME/.config}"; do
+{
+umask 0077
+config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+old_gnupghome=${GNUPGHOME:-"$HOME/.gnupg"}
+unset GNUPGHOME
+for d in /etc "$config_home"; do
     rc_file="$d/split-gpg2-rc"
     if [ -r "$rc_file" ]; then
         . "$rc_file"
     fi
 done
+if [[ ! -v GNUPGHOME ]]; then
+    new_homedir=$config_home/split-gpg2/gnupg
+    if [[ ! -d "$new_homedir" ]]; then
+        mkdir -p -m 0700 -- "$new_homedir"
+        gpg2 --homedir "$old_gnupghome" --export-secret-subkeys | gpg2 --homedir "$new_homedir" --import
+    fi
+fi
+} < /dev/null > /dev/null
 
 /usr/bin/python3 -m splitgpg2

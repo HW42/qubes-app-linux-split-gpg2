@@ -20,7 +20,7 @@ install-other:
 	install -d $(DESTDIR)/usr/share/split-gpg2
 	install -d $(DESTDIR)/usr/share/split-gpg2-tests
 	install -d $(DESTDIR)/etc/qubes-rpc
-	install -d $(DESTDIR)/etc/gnupg
+	install -d $(DESTDIR)/etc/gnupg $(DESTDIR)/usr/bin
 	install -d $(DESTDIR)/usr/lib/systemd/user/
 	install -d $(DESTDIR)/usr/lib/systemd/user-preset/
 	install -d $(DESTDIR)/usr/share/doc/split-gpg2
@@ -34,3 +34,4 @@ install-other:
 	install -m 644 split-gpg2-rc.example $(DESTDIR)/usr/share/doc/split-gpg2/examples/
 	install -m 644 README.md $(DESTDIR)/usr/share/doc/split-gpg2/
 	install -m 644 tests/* $(DESTDIR)/usr/share/split-gpg2-tests/
+	install -m 755 splitgpg2-migrate-subkeys $(DESTDIR)/usr/bin

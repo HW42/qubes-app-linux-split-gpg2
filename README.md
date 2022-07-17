@@ -100,6 +100,14 @@ If you want change some server option copy `/usr/share/doc/split-gpg2/examples/s
 
 If you have a passphrase on your keys and `gpg-agent` only shows the "keygrip" (something like the fingerprint of the private key) when asking for the passphrase, then make sure that you have imported the public key part in the server domain.
 
+## Migrating from split-gpg1
+
+Unlike split-gpg1, split-gpg2 does *not* know what is being signed.  Therefore, a client can sign other keys as well as data.  In particular, a client can create a signing-capable subkey and use this to sign whatever they want without further prompting.  They can even export that key and send it elsewhere.
+
+To prevent this from happening, split-gpg2 must not have access to the primary key.  You can ensure this by by setting up a separate GnuPG home directory for split-gpg2, and running `gpg2 --export-secret-subkeys | gpg2 --homedir "$NEWHOMEDIR" --import-secret-keys`.  split-gpg2 will do this automatically if you have not configured it to do otherwise.
+
+You **must** have a signing-capable subkey configured for this to work.  split-gpg2 will not generate one automatically, as it does not know if you are using a smart card or what parameters should be used to generate the key.  Also, if you generate a new key in your normal home directory, it will not automatically be made available in split-gpg2.  Future releases may lift both of these limitations.  In the meantime, you can run `splitgpg2-migrate-subkeys` to make all of your secret subkeys available to split-gpg2, even if the split-gpg2 home directory already exists.
+
 ## Advanced usage
 
 There are a few option not described in this README.
