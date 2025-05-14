@@ -43,6 +43,13 @@ class StdoutWriterProtocol(protocols.Protocol):
 
     def connection_lost(self, exc: Optional[BaseException]) -> None:
         self._connection_lost = True
+
+        if not self._closed.done():
+            if exc is None:
+                self._closed.set_result(None)
+            else:
+                self._closed.set_exception(exc)
+
         # Wake up the writer(s) if currently paused.
         if not self._paused:
             return
@@ -53,11 +60,6 @@ class StdoutWriterProtocol(protocols.Protocol):
                     waiter.set_result(None)
                 else:
                     waiter.set_exception(exc)
-        if not self._closed.done():
-            if exc is None:
-                self._closed.set_result(None)
-            else:
-                self._closed.set_exception(exc)
 
     async def _drain_helper(self) -> None:
         if self._connection_lost:
